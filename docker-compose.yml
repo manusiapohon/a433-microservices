@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  # 1. Service item-app
+  item-app:
+    # Menggunakan image dari Docker Hub yang sudah kamu push sebelumnya
+    image: trmns/item-app-dicoding:v1
+    container_name: item-app
+    restart: always  #Menerapkan restart policy
+    # Port mapping: Port 80 host ke port 8080 container
+    ports:
+      - "80:8080"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=item-db
+    # Memastikan item-app berjalan setelah item-db
+    depends_on:
+      - item-db
+    networks:
+      - item-network
+
+  # 2. Service item-db
+  item-db:
+    # Menggunakan image mongo versi 3
+    image: mongo:3
+    container_name: item-db
+    restart: always  #Menerapkan restart policy
+    # Memakai volume app-db dengan target /data/db
+    volumes:
+      - app-db:/data/db
+    networks:
+      - item-network
+
+# 3. Mendefinisikan volume bernama app-db
+volumes:
+  app-db:
+
+networks:
+  item-network:
+    driver: bridge
